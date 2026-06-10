@@ -35,13 +35,12 @@ jobs:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
 
       - name: Start app
-        run: npm run start &
+        run: npx next start -p 3000 &
         env:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-          PORT: 3000
 
       - name: Wait for app to be ready
-        run: npx wait-on http://localhost:3000 --timeout 60000
+        run: npx wait-on tcp:3000 --timeout 60000
 
       - name: Run Playwright tests
         run: npx playwright test
