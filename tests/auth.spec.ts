@@ -20,19 +20,31 @@ test.describe.serial('Email verification flow', () => {
     // 2. Fill in the form with the disposable inbox
     await page.fill('[data-testid="email"]', inbox);
     await page.fill('[data-testid="password"]', 'TestPassword123!');
-    await page.click('[data-testid="submit"]');
 
-    // 3. Should show check email message
-    await expect(page.getByText('Check your email')).toBeVisible({ timeout: 10000 });
+    // Listen for the API response to catch errors
+    const responsePromise = page.waitForResponse('/api/auth/signup');
+    await page.click('[data-testid="submit"]');
+    const response = await responsePromise;
+    
+    console.log(`[test] Signup response status: ${response.status()}`);
+    const body = await response.json();
+    console.log(`[test] Signup response body: ${JSON.stringify(body)}`);
+
+    expect(response.status()).toBe(200);
+
+    // 3. Should redirect to check email page
+    await expect(page).toHaveURL('/signup/check-email', { timeout: 10000 });
 
     // 4. Wait for the verification email
     const email = await mail.waitForLatest(inbox, { timeout: 30000 });
     expect(email).not.toBeNull();
+    console.log(`[test] Email subject: ${email.subject}`);
     expect(email.subject.toLowerCase()).toContain('verify');
 
     // 5. Extract the verification link
     const linkMatch = email.body.match(/https?:\/\/\S+token=\S+/);
     expect(linkMatch).not.toBeNull();
+    console.log(`[test] Verification link: ${linkMatch![0]}`);
 
     // 6. Click the verification link
     await page.goto(linkMatch![0]);
@@ -48,10 +60,15 @@ test.describe.serial('Email verification flow', () => {
 
     // 2. Submit reset request
     await page.fill('[data-testid="email"]', inbox);
+    
+    const responsePromise = page.waitForResponse('/api/auth/forgot-password');
     await page.click('[data-testid="submit"]');
+    const response = await responsePromise;
+    console.log(`[test] Reset response status: ${response.status()}`);
 
     // 3. Wait for reset email
     const email = await mail.waitForLatest(inbox, { timeout: 30000 });
+    console.log(`[test] Reset email subject: ${email.subject}`);
     expect(email.subject.toLowerCase()).toContain('reset');
 
     // 4. Extract reset link
