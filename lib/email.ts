@@ -4,9 +4,9 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
 export async function sendVerificationEmail(to: string, token: string) {
-  const link = `${BASE_URL}/verify?token=${token}`;
+  const link = `${BASE_URL}/api/auth/verify?token=${token}`;
   await resend.emails.send({
-    from: 'onboarding@resend.dev',
+    from: 'noreply@zerodrop-sandbox.online',
     to,
     subject: 'Please verify your email address',
     html: `
@@ -21,7 +21,7 @@ export async function sendVerificationEmail(to: string, token: string) {
 export async function sendPasswordResetEmail(to: string, token: string) {
   const link = `${BASE_URL}/reset-password?token=${token}`;
   await resend.emails.send({
-    from: 'onboarding@resend.dev',
+    from: 'noreply@zerodrop-sandbox.online',
     to,
     subject: 'Reset your password',
     html: `
