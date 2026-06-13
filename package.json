@@ -14,7 +14,7 @@
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
     "resend": "^6.12.4",
-    "zerodrop-client": "^0.2.0"
+    "zerodrop-client": "^0.2.1"
   },
   "devDependencies": {
     "@playwright/test": "^1.44.0",

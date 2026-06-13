@@ -32,8 +32,8 @@ test.describe.serial('Email verification flow', () => {
     // 3. Should redirect to check email page
     await expect(page).toHaveURL('/signup/check-email', { timeout: 10000 });
 
-    // 4. Wait for the verification email (polling — SSE disabled until stable)
-    const email = await mail.waitForLatest(inbox, { timeout: 30000, sse: false });
+    // 4. Wait for the verification email via SSE
+    const email = await mail.waitForLatest(inbox, { timeout: 30000 });
     expect(email).not.toBeNull();
     console.log(`[test] Got email: ${email.subject} (id: ${email.id})`);
     expect(email.subject.toLowerCase()).toContain('verify');
