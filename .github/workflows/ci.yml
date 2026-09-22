@@ -27,7 +27,10 @@ jobs:
 
       - name: Generate ZeroDrop test inbox
         id: inbox
-        uses: zerodrop-dev/create-inbox@v1
+        # Pinned to a SHA, as the docs recommend. Replaces the archived
+        # create-inbox action, whose Marketplace listing was retired during the
+        # org migration.
+        uses: zerodrop-dev/setup-zerodrop@36c6685cce921fbe8b6353a71292c8e262124e3e # v1.0.0
 
       - name: Build app
         run: npm run build
