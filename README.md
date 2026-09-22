@@ -27,7 +27,7 @@ This repo shows a third option: catch real emails in CI using [ZeroDrop](https:/
 
 - name: Generate ZeroDrop test inbox
   id: inbox
-  uses: zerodrop-dev/create-inbox@v1
+  uses: zerodrop-dev/setup-zerodrop@v1
 
 - name: Run Playwright tests
   run: npx playwright test
@@ -82,12 +82,12 @@ A fresh inbox is generated automatically when `TEST_INBOX` is not set.
 - [Next.js](https://nextjs.org) — demo app
 - [Playwright](https://playwright.dev) — E2E tests
 - [zerodrop-client](https://npmjs.com/package/zerodrop-client) — disposable inbox SDK
-- [zerodrop-dev/create-inbox](https://github.com/marketplace/actions/zerodrop-create-inbox) — GitHub Action
+- [zerodrop-dev/setup-zerodrop](https://github.com/marketplace/actions/setup-zerodrop) — GitHub Action
 
 ---
 
 ## Free tier
 
-ZeroDrop's free tier uses a shared domain (`zerodrop-sandbox.online`) with AI spam filtering and 30-minute TTL. No signup required.
+ZeroDrop's free tier uses a shared domain (`zerodrop-sandbox.online`) with a 30-minute TTL. No signup required.
 
 For custom domains, team seats, and API keys: [zerodrop.dev](https://zerodrop.dev)
