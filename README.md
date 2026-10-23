@@ -27,7 +27,9 @@ This repo shows a third option: catch real emails in CI using [ZeroDrop](https:/
 
 - name: Generate ZeroDrop test inbox
   id: inbox
-  uses: zerodrop-dev/setup-zerodrop@v1
+  uses: zerodrop-dev/setup-zerodrop@aa882ace46b204bfd84bbcc374df73d32cf67343 # v1.1.0
+  with:
+    api-key: ${{ secrets.ZERODROP_API_KEY }}
 
 - name: Run Playwright tests
   run: npx playwright test
@@ -40,7 +42,7 @@ This repo shows a third option: catch real emails in CI using [ZeroDrop](https:/
 
 import { ZeroDrop } from 'zerodrop-client';
 
-const mail = new ZeroDrop();
+const mail = new ZeroDrop(); // reads ZERODROP_API_KEY
 const inbox = process.env.TEST_INBOX ?? mail.generateInbox();
 
 // Sign up with the disposable inbox
@@ -55,7 +57,9 @@ const link = email.body.match(/https?:\/\/\S+verify\S+/)?.[0];
 await page.goto(link);
 ```
 
-No mocking. No Docker container. The email arrives in under 3 seconds.
+No mocking. No Docker container.
+
+`api-key` is a free key from [zerodrop.dev/keys](https://zerodrop.dev/keys), stored as a repository secret. The inbox name then starts with your key's prefix and only your key can read it. The action also sets `ZERODROP_API_KEY` for the steps that follow, where `new ZeroDrop()` reads it.
 
 ---
 
@@ -64,6 +68,18 @@ No mocking. No Docker container. The email arrives in under 3 seconds.
 ```bash
 npm install
 npx playwright install chromium
+cp .env.example .env
+```
+
+Fill in `.env` (the app and `playwright.config.ts` both read it):
+
+- `RESEND_API_KEY` from [resend.com/api-keys](https://resend.com/api-keys).
+- `RESEND_FROM`, an address on a domain you've verified at [resend.com/domains](https://resend.com/domains), such as `Auth <auth@yourdomain.com>`. Resend's shared `onboarding@resend.dev` only sends to your own Resend account's address, so it can't reach a ZeroDrop inbox.
+- `ZERODROP_API_KEY`, a free key from [zerodrop.dev/keys](https://zerodrop.dev/keys) (sign in with GitHub). Without a key, one sender can reach only 5 different inboxes a day, and each test run uses a new inbox. With a key, inbox names start with your key's prefix, only your key can read them, and they aren't limited.
+
+Then start the app:
+
+```bash
 npm run dev
 ```
 
@@ -88,6 +104,6 @@ A fresh inbox is generated automatically when `TEST_INBOX` is not set.
 
 ## Free tier
 
-ZeroDrop's free tier uses a shared domain (`zerodrop-sandbox.online`) with a 30-minute TTL. No signup required.
+ZeroDrop's free tier uses a shared domain (`zerodrop-sandbox.online`) with a 30-minute TTL, and there's no signup to try it. Without an API key, one sender can reach only 5 different inboxes a day. A free key from [zerodrop.dev/keys](https://zerodrop.dev/keys) (sign in with GitHub) removes that limit for inboxes under your key's prefix, and only your key can read them.
 
-For custom domains, team seats, and API keys: [zerodrop.dev](https://zerodrop.dev)
+For a custom domain and longer retention, see Workspaces at [zerodrop.dev/pricing](https://zerodrop.dev/pricing).

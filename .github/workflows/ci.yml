@@ -29,18 +29,27 @@ jobs:
         id: inbox
         # Pinned to a SHA, as the docs recommend. Replaces the archived
         # create-inbox action, whose Marketplace listing was retired during the
-        # org migration.
-        uses: zerodrop-dev/setup-zerodrop@36c6685cce921fbe8b6353a71292c8e262124e3e # v1.0.0
+        # org migration. With api-key, the inbox name starts with the key's
+        # prefix, only that key can read it, and mail to it isn't held by the
+        # keyless limit (5 inboxes a day per sender). The action also sets
+        # ZERODROP_API_KEY for the steps that follow, where the tests read it.
+        uses: zerodrop-dev/setup-zerodrop@aa882ace46b204bfd84bbcc374df73d32cf67343 # v1.1.0
+        with:
+          api-key: ${{ secrets.ZERODROP_API_KEY }}
 
+      # lib/email.ts sends from RESEND_FROM, an address on a domain verified
+      # in the Resend account that RESEND_API_KEY belongs to.
       - name: Build app
         run: npm run build
         env:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_FROM: noreply@zerodrop-sandbox.online
 
       - name: Start app
         run: npx next start -p 3000 &
         env:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_FROM: noreply@zerodrop-sandbox.online
 
       - name: Wait for app to be ready
         run: npx wait-on tcp:3000 --timeout 60000

@@ -61,7 +61,9 @@ test.describe.serial('Email verification flow', () => {
 
     const responsePromise = page.waitForResponse('/api/auth/forgot-password');
     await page.click('[data-testid="submit"]');
-    await responsePromise;
+    const response = await responsePromise;
+    // A failed send is a 500 here (see lib/email.ts), not a long wait below
+    expect(response.status()).toBe(200);
 
     // 3. Wait for a NEW email (different from verification email)
     let resetEmail = null;
